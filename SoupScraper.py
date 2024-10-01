@@ -40,7 +40,7 @@ for url in urls[:10]:
             print("Price not found", end="\t")
 
         # Color of the product
-        color_th = soup.find('th', text='Colour')
+        color_th = soup.find('th', string='Colour')
         if color_th:
             color = color_th.find_next('td').get_text(strip=True)
             print(color, end="\t")
@@ -48,7 +48,7 @@ for url in urls[:10]:
             print("Color not found", end="\t")
 
         # Weight of the product
-        weight_th = soup.find('th', text='Weight')
+        weight_th = soup.find('th', string='Weight')
         if weight_th:
             weight = weight_th.find_next('td').get_text(strip=True)
             print(weight, end="\t")
@@ -56,7 +56,7 @@ for url in urls[:10]:
             print("Weight not found", end="\t")
 
         # Smart features of the product
-        smart_th = soup.find('th', text='Smart')
+        smart_th = soup.find('th', string='Smart')
         if smart_th:
             smart_features = smart_th.find_next('td').get_text(strip=True)
             print(smart_features, end="\t")
@@ -67,7 +67,7 @@ for url in urls[:10]:
         energy_class = None
         energy_labels = ['Energy Class', 'Energy efficiency rating', 'Energy Rating', 'Energy Efficiency Class', 'Energy efficiency class']
         for label in energy_labels:
-            energy_th = soup.find('th', text=label)
+            energy_th = soup.find('th', string=label)
             if energy_th:
                 energy_class = energy_th.find_next('td').get_text(strip=True)
                 print(energy_class, end="\t")
@@ -79,7 +79,7 @@ for url in urls[:10]:
         noise_level = None
         noise_labels = ['Noise level dB(A)', 'Noise level', 'Noise Level (dBa)', 'Noise Level dB(A)', 'Airborne acoustical noise emissions']
         for label in noise_labels:
-            noise_th = soup.find('th', text=label)
+            noise_th = soup.find('th', string=label)
             if noise_th:
                 noise_level = noise_th.find_next('td').get_text(strip=True)
                 if "dB" not in noise_level:
