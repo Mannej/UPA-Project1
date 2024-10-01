@@ -26,7 +26,8 @@ def getProductList():
             # Increment the page number for the next request
             params['page'] += 1
         else:
-            print(f"Failed to retrieve products. Status code: {response.status_code}")
+            #cannot print to stdout
+            # print(f"Failed to retrieve products. Status code: {response.status_code}")
             break
             
     return product_links
@@ -38,6 +39,6 @@ def saveToFile(links, filename):
 
 if __name__ == "__main__":
     urls = getProductList()  # Call the function with parentheses
-    for idx, link in enumerate(urls, start=1):
-        print(f"{idx}: {link}")  # Corrected print statement
-    saveToFile(urls, "urls.txt")
+
+    for link in urls:
+        print(link)  # Write each link on a new line

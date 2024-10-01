@@ -1,14 +1,10 @@
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 import json
+import sys
 
-# Open and read the file
-try:
-    with open('urls.txt', 'r') as file:
-        urls = [line.strip() for line in file.readlines()]
-except:
-    print("Error opening file urls.txt")
-    exit()
+urls = [line.strip() for line in sys.stdin]
+
 
 # Headers to avoid 403 error
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
