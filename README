@@ -8,7 +8,6 @@
 **Web:** Electro City
 **Url:** www.electrocity.ie
 
-Po ssl problémech nefunguje na Merlinovi. Ale běží v pořádku na Evě.
 
 **Sloupce:**
 1. **Url**
@@ -19,3 +18,11 @@ Po ssl problémech nefunguje na Merlinovi. Ale běží v pořádku na Evě.
 6. **Smart features of the product**
 7. **Energy class of the product**
 8. **Noise level (dB) of the product**
+
+**Setup:**
+
+Po ssl problémech nefunguje na Merlinovi. Ale běží v pořádku na Evě.
+```bash
+bash build.sh
+bash run.sh
+```
