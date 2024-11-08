@@ -1,0 +1,20 @@
+sloupcová wide-column databáze (např. Apache Cassandra)
+Statistika průjezdu vozidel ze sledovaných křižovatek v roce 2024 
+https://opendata.ostrava.cz/statistika-prujezdu-vozidel-ze-sledovanych-krizovatek-v-roce-2024/
+csv
+
+dokumentová databáze (např. MongoDB)
+Návrh kapitálového rozpočtu na r. 2024
+https://data.gov.cz/datov%C3%A1-sada?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00845451%2F0e36ed6abc2f2621c37de0564dc791c5
+cvs
+
+grafová databáze (např. Neo4J)
+cykloztezky
+https://data.gov.cz/datová-sada?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatové-sady%2F00845451%2F37085191
+vice 
+?spojit vice dohromady
+
+databáze časových řad (např. InfluxDB)
+Dopravní přestupky dle data a místa spáchání v roce 2024
+https://data.gov.cz/datov%C3%A1-sada?iri=https%3A%2F%2Fdata.gov.cz%2Fzdroj%2Fdatov%C3%A9-sady%2F00845451%2Fdec532858bf68c8b8846b79ebe8ea211
+csv
