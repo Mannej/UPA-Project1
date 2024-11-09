@@ -1,0 +1,86 @@
+Statistika průjezdu vozidel ze sledovaných křižovatek v roce 2024 
+https://opendata.ostrava.cz/statistika-prujezdu-vozidel-ze-sledovanych-krizovatek-v-roce-2024/
+csv
+sloupcová wide-column databáze Apache Cassandra
+
+
+Vysvětlení, proč je nejlepší k uložení a dotazování:
+sloupce (struktura/schéma, datové typy, velikosti domény)
+Cassandra má flexibilní schéma, což umožňuje dynamické ukládání různých sloupců bez nutnosti předem definovaného schématu. Široko-sloupcová struktura usnadňuje ukládání a agregaci dat (např. počty projetí pro různé stanice a časy)
+Cassandra podporuje textové, timestamp a integer typy, což je ideální pro uložení údajů o stanici, třídě objektu, datu a počtu projetí.
+--Cassandra je navržena pro práci s velkými časovými řadami, kde jsou záznamy pravidelně přidávány a organizovány podle časových intervalů, což jí umožňuje efektivně spravovat i rozsáhlé časové domény.
+
+řádky (počet, velikost, různorodost, existence identifikátorů a referencí)
+Cassandra je navržena pro efektivní ukládání a správu velkých objemů dat jako jsou průjezdy aut křižovatkami. Malá velikost řádků pro efektivní zápis a čtení.
+Různorodost je v naší sadě poměrně vysoká, máme velké množství datumů a časů, různorodé počty projetí a různé stacice se svými směry. Velký rozsah různorodých hodnot je vhodný pro sloupcovou databázi, která je efektivní při práci s variabilními daty.
+Cassandra používá primární klíč složený z více sloupců pro určení unikátnosti, čehož jednoduše dosáhneme složením data a stanice.
+V Cassandře není zajišťována referenční integrita, což nám u těhto dat nevadí, potřebujeme jenom související data v jedné tabulce.
+
+způsob a průběh vzniku dat a jejich uložení (zdroj, frekvence a perioda aktualizace, důvěryhodnost/chybovost dat, možnost zpětné změny již publikovaných dat či jen přidávání nových, možnosti komprese a agregace, retence/zapomínání dat, distribuce a škálovatelnost úložiště, redundance)
+Zdrojem dat jsou v tomto případě senzory na křižovatkách města. Pro tento typ databází jsou ideální data, které se generují v reálném čase a jsou pravidelně odesílány do systému. V našem případě se průjezdy křižovatkou agregují po dobu jedné hodiny než jsou odeslány.
+Cassandra není ideální pro aktualizaci, nebo mazýní dat, což se v našem szstému nestává skoro nikdz, pouze kdyby došlo k poruše senzorů.
+Cassandra může automaticky ukládat a spravovat agregované záznamy dat jako počtz projetí za delší časové úseky.
+Cassandra je horizontalně škálovatelná, což znamená, že lze snadno přidávat nové uzly do clusteru a rozšířit kapacitu, což je vhodné pro sledování dopravy, kde se periodicky přidává monožství dat.
+Cassandra zajišťuje redundanci dat díky replikaci, kde je záznam uložen na více uzlech, což zajišťuje vysokou rychlost a dostupnost. V příkladu dole jsou nastavené tři repliky.
+
+způsob a průběh spotřeby dat (předdefinované a ad-hoc dotazy, frekvence a perioda čtení výsledků, distribuce a škálovatelnost zpracování dat pro dotazy, pozice konzumentů výsledků vzhledem k místu uložení a zpracování dat, možnosti urychlení dotazů pomocí cache/před-počítání, možnosti indexace)
+Cassandra je ideální pro scénáře, kde jsou dotazy především založené na primárním klíči nebo předem definovaných strukturách. V našem případě, kdy většina dotazů spočívá v agregovaných datech (počet průjezdů za časovou dobu), Cassandra poskytuje skvělý výkon.
+Cassandra je optimalizována spíše pro zápis než pro čtení a frekvence čtení může být tím pádem nižší. Toto nám u našeho datasetu nevadí  protože data jsou agregována na hodinové bázi, což znamená, že dotazy nejsou prováděny v reálném čase na jednotlivé záznamy, ale spíše na souhrnné hodnoty, které jsou pravidelně aktualizovány a uloženy.
+Cassandra umožňuje cacheování čtení a podporuje předpočítání souhrnných hodnot. V našem případě bude efektivní využívat předpočítané agregace, což umožňuje rychlý přístup k výsledkům bez nutnosti opakovaného výpočtu.
+
+
+Příkazy pro definici úložiště:
+CREATE KEYSPACE doprava
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '3'};
+
+USE doprava;
+
+CREATE TABLE statistika_prujezdu (
+    datum timestamp,
+    stanice text,
+    trida_objektu text,
+    pocet int,
+    PRIMARY KEY (stanice, datum)
+);
+
+
+Algoritmický popis importu dat:
+import pandas as pd
+from cassandra.cluster import Cluster
+from datetime import datetime
+
+cluster = Cluster([ip_address])
+session = cluster.connect('doprava')
+
+file_path = 'Statistika-poctu-prujezdu-2024.csv'
+data = pd.read_csv(file_path)
+
+for _, row in data.iterrows():
+    datum = datetime.strptime(row['Datum'], '%d.%m.%Y %H:%M')
+    stanice = row['Stanice']
+    trida_objektu = row['Třída objektu']
+    pocet = row['Počet']
+
+    session.execute("""
+        INSERT INTO statistika_prujezdu (datum, stanice, trida_objektu, pocet)
+        VALUES (%s, %s, %s, %s)
+    """, (datum, stanice, trida_objektu, pocet))
+
+cluster.shutdown()
+
+
+Dotaz v jazyce daného databázového produktu:
+--počet průjezdů vozidel pro všechny stanici v daném datovém rozmezí
+SELECT stanice, SUM(pocet) AS celkovy_pocet_prujezdu
+FROM statistika_prujezdu
+AND datum >= '2024-01-01' AND datum < '2024-02-01';
+GROUP BY stanice;
+
+Jak nalezne uzly, kde jsou uložena požadovaná data:
+Jeden uzel příjme dotaz a stane se koordinačním uzlem. Pro každý partition key je spočítán hash pomocí hashovací funkce, který určí, na kterých uzlech jsou data uložena a kde se mají posílat požadavky.
+
+Jak data z uzlů získá a dále distribuovaným způsobem zpracuje:
+Koordinační uzel pošle dotaz na dané uzly. Na těchto uzlech se provede filtrace podle časového rozmezí a agregace. Každý uzel provádí práci pouze na své části dat. Výsledky poté vrací koordinátorovy.
+
+Jak výsledky doručí klientovi, který zadal dotaz, a jak je tento zkonzumuje:
+Koordinátor shromáždí výsledky z uzlů, sečte je a vrátí je zpět klientovi.Ten je následně zanalyzuje, nebo vizualizuje.
