@@ -4,7 +4,7 @@ import json
 import sys
 
 urls = [line.strip() for line in sys.stdin]
-
+urls = urls[:20]
 
 # Headers to avoid 403 error
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
@@ -73,7 +73,7 @@ for url in urls:
 
         # Noise level (dB) of the product 
         noise_level = None
-        noise_labels = ['Noise level dB(A)', 'Noise level', 'Noise Level (dBa)', 'Noise Level dB(A)', 'Airborne acoustical noise emissions']
+        noise_labels = ['Noise level dB(A)', 'Maximum Noise Level','Noise level', 'Noise Level', 'Noise Level (dBa)', 'Noise level (dBa)', 'Noise level (dBA)', 'Noise Level (dBA)', 'Noise Level dB(A)', 'Airborne acoustical noise emissions', 'Noise level &#8211; dB(A)']
         for label in noise_labels:
             noise_th = soup.find('th', string=label)
             if noise_th:
