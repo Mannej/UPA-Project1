@@ -1,0 +1,41 @@
+**Název týmu:** Tým xbahou00
+
+**Řešitelé:**
+- Bc. Ondřej Bahounek (xbahou00)
+- Bc. Rostislav Červenka (xcerve30)
+- Bc. Marek Krúpa (xkrupam00)
+
+## Část 1
+Webscraping a čištění dat
+
+**Web:** Electro City
+**Url:** www.electrocity.ie
+
+
+**Sloupce:**
+1. **Url**
+2. **Name of the product**
+3. **Price of the product**
+4. **Color of the product**
+5. **Weight of the product**
+6. **Smart features of the product**
+7. **Energy class of the product**
+8. **Noise level (dB) of the product**
+
+**Setup:**
+
+Po ssl problémech nefunguje na Merlinovi. Ale běží v pořádku na Evě.
+```bash
+bash build.sh
+bash run.sh
+```
+
+
+## Část 2
+Ukládání dat v různých databázových technologiích
+Upa2.pdf
+
+
+## Část 3
+Explorativní analýza
+graphs.pdf
