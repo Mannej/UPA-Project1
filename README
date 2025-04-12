@@ -5,6 +5,9 @@
 - Bc. Rostislav Červenka (xcerve30)
 - Bc. Marek Krúpa (xkrupam00)
 
+## Část 1
+Webscraping a čištění dat
+
 **Web:** Electro City
 **Url:** www.electrocity.ie
 
@@ -26,3 +29,13 @@ Po ssl problémech nefunguje na Merlinovi. Ale běží v pořádku na Evě.
 bash build.sh
 bash run.sh
 ```
+
+
+## Část 2
+Ukládání dat v různých databázových technologiích
+Upa2.pdf
+
+
+## Část 3
+Explorativní analýza
+graphs.pdf
